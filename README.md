@@ -1,5 +1,9 @@
 # batch-close-tab
 
+设置域名规则，一键关闭所有符合规则的浏览器标签页
+
+Set domain name rules and close all browser tabs that match the rules with one click
+
 > a chrome extension tools built with Vite + Vue, and Manifest v3
 
 ## Installing

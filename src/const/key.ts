@@ -1,3 +1,5 @@
 export const WHITE_LIST = 'WHITE_LIST'
+export const QUERY_TABS = 'QUERY_TABS'
 export const CONFIRM = 'CONFIRM'
 export const CLOSE = 'CLOSE'
+export const DONE = 'DONE'
