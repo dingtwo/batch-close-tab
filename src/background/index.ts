@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener((request) => {
     case CLOSE:
       console.log('真的要删了', request.tabs)
 
-      request.tabs.forEach((tab) => {
+      request.tabs.forEach((tab: chrome.tabs.Tab) => {
         if (tab.id) {
           chrome.tabs.remove(tab.id)
           chrome.runtime.sendMessage({ type: DONE })

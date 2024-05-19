@@ -13,7 +13,7 @@ import { CLOSE, CONFIRM, DONE, QUERY_TABS, WHITE_LIST } from '../const/key'
 const list = ref<string[]>([])
 const rule = ref('')
 const isExpand = ref(false)
-const tabs = ref([])
+const tabs = ref<chrome.tabs.Tab[]>([])
 const done = ref(false)
 
 const minus = (index: number) => {
@@ -182,7 +182,9 @@ h3 {
   font-weight: 200;
   line-height: 1.2rem;
   margin: 2rem auto;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
+  box-shadow:
+    rgba(0, 0, 0, 0.1) 0px 20px 25px -5px,
+    rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
 }
 
 .calc {
