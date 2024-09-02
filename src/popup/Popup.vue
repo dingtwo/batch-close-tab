@@ -10,35 +10,20 @@ import {
 
 import { CLOSE, CONFIRM, DONE, QUERY_TABS, WHITE_LIST } from '../const/key'
 
-const list = ref<string[]>([])
-const rule = ref('')
 const isExpand = ref(false)
 const tabs = ref<chrome.tabs.Tab[]>([])
 const done = ref(false)
 
-const minus = (index: number) => {
-  list.value.splice(index, 1)
-}
-const clear = async () => {
-  chrome.storage.sync.clear()
-}
-const add = () => list.value.push(rule.value)
-const close = () => {
+const queryTabs = () => {
   done.value = false
   chrome.runtime.sendMessage({ type: QUERY_TABS })
 }
-const toogleExpand = () => {
-  isExpand.value = !isExpand.value
-}
+
 const clean = () => {
   chrome.runtime.sendMessage({ type: CLOSE, tabs: tabs.value })
 }
 onMounted(() => {
-  chrome.storage.sync.get([WHITE_LIST], (result) => {
-    console.log('结果', result, Array.from(result[WHITE_LIST]))
-    console.log('序列化', JSON.stringify(result[WHITE_LIST]))
-    list.value = Array.from(result[WHITE_LIST])
-  })
+  queryTabs()
 })
 
 chrome.runtime.onMessage.addListener((message, sender, response) => {
@@ -63,59 +48,26 @@ chrome.runtime.onMessage.addListener((message, sender, response) => {
   }
 })
 
-watch(
-  list,
-  (newList) => {
-    chrome.storage.sync
-      .set({ [WHITE_LIST]: Array.from(list.value) })
-      .catch(console.error)
-      .then(console.log)
-    console.log(typeof newList)
-    // TODO: why
-  },
-  { deep: true },
-)
+
 </script>
 
 <template>
   <main>
     <header>
-      <h3 @click="close">close tabs</h3>
-      <v-icon
-        @click="toogleExpand"
-        :name="isExpand ? 'md-expandless' : 'md-expandcircledown'"
-        animation="pulse"
-        scale="1.5"
-        fill="#15327B"
-      />
+      <h3>清理大师</h3>
     </header>
 
-    <div class="tabs" v-show="tabs.length > 0">
+    <div class="tabs">
       <v-icon v-if="done" name="co-mood-very-good"></v-icon>
       <div v-else>
         <button @click="clean"><v-icon name="md-cleaningservices-round"></v-icon></button>
         <ul>
-          <li v-for="tab in tabs" :key="tab.id || tab.title">
-            <p>{{ tab.title }}</p>
-            <p>{{ tab.url }}</p>
+          <li v-for="tab in tabs" :key="tab.id || tab.title" class="tab-item">
+            <img :src="tab.favIconUrl" alt="favicon" width="20" height="20" />
+            <p class="tab-title">{{ tab.title }}</p>
           </li>
         </ul>
       </div>
-    </div>
-
-    <div class="white-list" v-show="isExpand">
-      <ul>
-        <li v-for="(rule, index) in list" :key="rule">
-          <div class="calc">
-            <button @click="minus(index)">-</button>
-            <label>{{ rule }}</label>
-          </div>
-        </li>
-        <li><input type="text" v-model="rule" /><button @click="add">+</button></li>
-      </ul>
-    </div>
-    <div class="actions">
-      <button @click="clear">clean rules</button>
     </div>
   </main>
 </template>
@@ -169,10 +121,24 @@ ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  li {
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    padding: 10px;
-  }
+}
+ul > li {
+  /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+ul > li > img {
+  margin-right: 10px;
+}
+.tab-title {
+  line-height: 20px;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap; /* 溢出不换行 */
+  overflow: hidden; /* 超出部分隐藏 */
+  text-overflow: ellipsis; /* 超出部分显示省略号 */
 }
 
 h3 {
@@ -187,31 +153,7 @@ h3 {
     rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
 }
 
-.calc {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* margin: 2rem; */
 
-  > button {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid #1a3080;
-    border-radius: 0.25rem;
-    background-color: transparent;
-    color: #1a3080;
-    cursor: pointer;
-    outline: none;
-
-    width: 3rem;
-    margin: 0 a;
-  }
-
-  > label {
-    font-size: 1.5rem;
-    margin: 0 1rem;
-  }
-}
 
 a {
   font-size: 0.5rem;
