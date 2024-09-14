@@ -13,7 +13,7 @@ function queryTabs() {
         const url = new URL(tab.url)
         return regexList.some((regex: RegExp) => regex.test(url.hostname))
       })
-      chrome.runtime.sendMessage({ type: QUERY_TABS, tabs: matchedTabs })
+      chrome.runtime.sendMessage({ type: QUERY_TABS, tabs: tabs })
     })
   })
 }
